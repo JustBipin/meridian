@@ -15,8 +15,8 @@ class QuadraticIntro(Scene):
         title = Text("I'm thinking of a number...", font_size=40, color=BLACK)
         title.to_edge(UP, buff=1.0)
 
-        box1 = Square(side_length=0.9, color=YELLOW)
-        q1 = MathTex("?", color=YELLOW).scale(1.1).move_to(box1)
+        box1 = Square(side_length=0.9, color=RED)
+        q1 = MathTex("?", color=PURPLE).scale(1.1).move_to(box1)
         b1 = VGroup(box1, q1)
         b2 = b1.copy()
         times = MathTex(r"\times", color=BLACK).scale(1.2)
@@ -31,7 +31,7 @@ class QuadraticIntro(Scene):
             FadeIn(b2, scale=0.5), FadeIn(eq_sign),
         )
         self.play(FadeIn(nine, shift=DOWN * 0.6))
-        self.play(Indicate(b1, color=YELLOW), Indicate(b2, color=YELLOW))
+        self.play(Indicate(b1, color=RED), Indicate(b2, color=RED))
         self.wait(2)
 
         # ==================================================================
@@ -224,7 +224,7 @@ class QuadraticIntro(Scene):
         self.wait(1)
         self.play(FadeOut(mirrors), FadeOut(prompt))
 
-        curve = axes.plot(lambda x: x * x, x_range=[-3.1, 3.1], color=YELLOW)
+        curve = axes.plot(lambda x: x * x, x_range=[-3.1, 3.1], color=RED)
         self.play(Create(curve), run_time=2.5)
         curve_label = VGroup(
             Text("a U-shaped curve", font_size=28, color=BLACK),
@@ -240,16 +240,16 @@ class QuadraticIntro(Scene):
         # BEAT 5 — Solving = hunting on the curve; notation as shorthand (~35 s)
         # ==================================================================
         eq1 = MathTex("?", r"\times", "?", "=", "9", color=BLACK).scale(1.1)
-        eq1[0].set_color(YELLOW)
-        eq1[2].set_color(YELLOW)
+        eq1[0].set_color(RED)
+        eq1[2].set_color(RED)
         eq1[4].set_color(BLUE)
         eq1.move_to(LEFT * 4.2 + UP * 2.6)
         self.play(Write(eq1))
         self.wait(1)
 
         eq2 = MathTex("x", r"\cdot", "x", "=", "9", color=BLACK).scale(1.1)
-        eq2[0].set_color(YELLOW)
-        eq2[2].set_color(YELLOW)
+        eq2[0].set_color(RED)
+        eq2[2].set_color(RED)
         eq2[4].set_color(BLUE)
         eq2.move_to(eq1)
         self.play(ReplacementTransform(eq1, eq2), run_time=1.5)
@@ -260,7 +260,7 @@ class QuadraticIntro(Scene):
         self.wait(1)
 
         eq3 = MathTex("x^2", "=", "9", color=BLACK).scale(1.1)
-        eq3[0].set_color(YELLOW)
+        eq3[0].set_color(RED)
         eq3[2].set_color(BLUE)
         eq3.move_to(eq2)
         self.play(TransformMatchingTex(eq2, eq3), run_time=1.5)
@@ -292,7 +292,7 @@ class QuadraticIntro(Scene):
         self.wait(1.5)
 
         eq4 = MathTex("x^2", "-", "9", "=", "0", color=BLACK).scale(1.1)
-        eq4[0].set_color(YELLOW)
+        eq4[0].set_color(RED)
         eq4[2].set_color(BLUE)
         eq4.move_to(eq3)
         self.play(TransformMatchingTex(eq3, eq4), FadeOut(caption1),
@@ -327,16 +327,16 @@ class QuadraticIntro(Scene):
         ).arrange(DOWN, buff=0.25).next_to(def_title, DOWN, buff=0.6)
         self.play(Write(def_title))
         self.play(FadeIn(def_body, shift=UP * 0.2))
-        ring = Circle(radius=0.5, color=YELLOW).move_to(def_body[1][1])
+        ring = Circle(radius=0.5, color=RED).move_to(def_body[1][1])
         self.play(Create(ring))
         self.wait(2)
 
         # Sorting: which of these are quadratic?
         ex1 = MathTex("x^2", "=", "9", color=BLACK).scale(0.95)
-        ex1[0].set_color(YELLOW)
+        ex1[0].set_color(RED)
         ex2 = MathTex("x", "+", "5", "=", "8", color=BLACK).scale(0.95)
         ex3 = MathTex("x^2", "+", "2x", "=", "3", color=BLACK).scale(0.95)
-        ex3[0].set_color(YELLOW)
+        ex3[0].set_color(RED)
         examples = VGroup(ex1, ex2, ex3).arrange(DOWN, buff=0.75,
                                                  aligned_edge=LEFT)
         examples.next_to(def_body, DOWN, buff=0.8).shift(LEFT * 1.5)
@@ -346,7 +346,7 @@ class QuadraticIntro(Scene):
         tag1 = VGroup(MathTex(r"\checkmark", color=GREEN),
                       Text("quadratic", font_size=24, color=GREEN)
                       ).arrange(RIGHT, buff=0.2).next_to(ex1, RIGHT, buff=0.8)
-        self.play(Circumscribe(ex1[0], color=YELLOW), FadeIn(tag1))
+        self.play(Circumscribe(ex1[0], color=RED), FadeIn(tag1))
         self.wait(1)
 
         tag2 = VGroup(MathTex(r"\times", color=RED),
@@ -359,7 +359,7 @@ class QuadraticIntro(Scene):
         tag3 = VGroup(MathTex(r"\checkmark", color=GREEN),
                       Text("quadratic", font_size=24, color=GREEN)
                       ).arrange(RIGHT, buff=0.2).next_to(ex3, RIGHT, buff=0.8)
-        self.play(Circumscribe(ex3[0], color=YELLOW), FadeIn(tag3))
+        self.play(Circumscribe(ex3[0], color=RED), FadeIn(tag3))
         self.wait(1)
 
         punch = Text("the x² is why it can have TWO answers",
@@ -395,7 +395,7 @@ class QuadraticIntro(Scene):
             axis_config={"color": BLACK}, tips=False,
         ).shift(RIGHT * 3.4 + DOWN * 0.3)
         axesR.set_color(BLACK)
-        curveR = axesR.plot(lambda x: x * x, x_range=[-3.3, 3.3], color=YELLOW)
+        curveR = axesR.plot(lambda x: x * x, x_range=[-3.3, 3.3], color=RED)
 
         hr = ValueTracker(9)
         lineR = always_redraw(lambda: Line(
