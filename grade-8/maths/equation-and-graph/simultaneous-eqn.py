@@ -4,21 +4,14 @@ from manim_themes.manim_theme import apply_theme
 # ============================================================================
 # ESTABLISH LONDON THEME COLORS & CONSTANTS (Synchronized with plist specs)
 # ============================================================================
-# Background Color
 BG_COLOR = "#F8F5EC"       
-
-# Main Text & Ink lines
 INK = "#1F3A2F"            
-
-# Muted Text, Labels, and Axes lines
 DIM = "#756A55"            
-
-# Highlight Colors
-GOLD = "#E5AA2C"           # Yellow Accent
-PINK = "#C461C4"           # Magenta Accent
-TEAL = "#5AC2A0"           # Cyan Accent
-GREEN = "#6E903A"          # Green Validation Accent
-RED = "#C14A4A"            # Red Warning Accent
+GOLD = "#E5AA2C"           
+PINK = "#C461C4"           
+TEAL = "#5AC2A0"           
+GREEN = "#6E903A"          
+RED = "#C14A4A"            
 
 
 # ============================================================================
@@ -87,7 +80,6 @@ def make_banana(scale_factor=1.0):
 class SimultaneousEquations(Scene):
     def setup(self):
         super().setup()
-        # Dynamically applies background, configurations, and global theme parameters
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
@@ -157,6 +149,11 @@ class SimultaneousEquations(Scene):
         # icons morph into shorthand symbols  (2x + y = 8 ,  x + y = 5)
         hint = Text("In algebra:", color=DIM, font_size=30).to_edge(UP, buff=0.7)
         self.play(FadeIn(hint), FadeOut(qtext), run_time=1)
+        self.wait(0.5)
+
+        txt = Text("Let x = apple, y = banana", color=INK, font_size=30).to_edge(UP, buff=0.7)
+        self.play(ReplacementTransform(hint, txt), run_time=1)
+        self.wait(1)
 
         eq1 = MathTex("2x", "+", "y", "=", "8")
         eq1[0].set_color(GOLD); eq1[1].set_color(INK); eq1[2].set_color(PINK)
@@ -175,7 +172,7 @@ class SimultaneousEquations(Scene):
         # ============================================================
         # BEAT 2 — MISCONCEPTION: "one equation has one answer"
         # ============================================================
-        self.play(FadeOut(eq1), FadeOut(q), FadeOut(hint),
+        self.play(FadeOut(eq1), FadeOut(q), FadeOut(txt),
                   eq2.animate.scale(1.15).move_to(UP * 2.9), run_time=1.5)
         self.wait(0.5)
 
