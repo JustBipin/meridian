@@ -3,6 +3,8 @@
 
 [Area of Quadrilaterals](./grade-8/maths/area/quadrilateral.py)
 
+[Area of Circle](./grade-8/maths/area/circle.py)
+
 # 11 : Equation and Graph
 [Simultaneous Equations](./grade-8/maths/equation-and-graph/simultaneous-eqn.py)
 
