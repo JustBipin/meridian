@@ -702,9 +702,6 @@ class CircleArea(MovingCameraScene):
         fold_width_brace = Brace(bottom_row, DOWN, buff=0.2)
         fold_width_label = fold_width_brace.get_tex(r"\pi r")
 
-        # fold_width_brace = Brace(row_wedges, DOWN, buff=0.2)
-        # fold_width_label = fold_width_brace.get_tex(r"\pi r")
-
         self.play(
             FadeIn(fold_height_brace),
             Write(fold_height_label),
@@ -722,7 +719,10 @@ class CircleArea(MovingCameraScene):
         )
 
         # =========================================================
-        # 5. MORE SLICES — 30 WEDGES, CIRCLE AND ROW UPDATE TOGETHER
+        # 5. PROGRESSIVELY MORE SLICES — 8 -> 16 -> 32 -> 64 -> 128
+        # Circle and interlocked row update together at each step, so the
+        # audience watches the "staircase" smooth out in clear stages
+        # instead of jumping straight from 8 wedges to a near-rectangle.
         # =========================================================
         refine_caption = Text(
             "More wedges, less waviness.",
@@ -730,33 +730,30 @@ class CircleArea(MovingCameraScene):
         ).next_to(interlocked_wedges, DOWN, buff=1.5)
         self.play(Write(refine_caption))
 
-        circle_wedges_30 = make_wedges(30)
-        row_wedges_30 = arrange_wedges_in_row(30, circle_wedges_30, ROW_ORIGIN)
+        # Each successive doubling is a visually smaller change than the
+        # last, so we ease the run_time down a bit at each step to keep
+        # the pacing feeling like it's converging rather than dragging.
+        wedge_counts = [16, 32, 64, 128]
+        step_run_times = [2.0, 1.5, 1.2, 1.0]
 
-        self.play(
-            Transform(circle_wedges, circle_wedges_30),
-            Transform(row_wedges, row_wedges_30),
-            run_time=2.5,
-        )
-        self.wait(1)
+        for n, rt in zip(wedge_counts, step_run_times):
+            next_circle_wedges = make_wedges(n)
+            next_row_wedges = arrange_wedges_in_row(n, next_circle_wedges, ROW_ORIGIN)
+            self.play(
+                Transform(circle_wedges, next_circle_wedges),
+                Transform(row_wedges, next_row_wedges),
+                run_time=rt,
+            )
+            self.wait(0.3)
 
-        # =========================================================
-        # 6. A LOT OF SLICES — THE ROW BECOMES A RECTANGLE
-        # =========================================================
-        N_FINAL = 90
-        circle_wedges_final = make_wedges(N_FINAL)
-        row_wedges_final = arrange_wedges_in_row(N_FINAL, circle_wedges_final, ROW_ORIGIN)
-
-        self.play(
-            Transform(circle_wedges, circle_wedges_final),
-            Transform(row_wedges, row_wedges_final),
-            run_time=2.5,
-        )
         self.wait(0.5)
         self.play(FadeOut(refine_caption))
 
+        # =========================================================
+        # 6. THE ROW BECOMES A RECTANGLE
+        # =========================================================
         # Snap the (now nearly-flat) row into a perfect rectangle.
-        # circle_wedges (now a fine 90-wedge circle) is left on screen as
+        # circle_wedges (now a fine 128-wedge circle) is left on screen as
         # a quiet reference in the corner - it is no longer faded out.
         rect_width = PI * RADIUS
         rect_height = RADIUS
