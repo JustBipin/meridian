@@ -9,3 +9,6 @@
 [Simultaneous Equations](./grade-8/maths/equation-and-graph/simultaneous-eqn.py)
 
 [Quadratic Equations](./grade-8/maths/equation-and-graph/quadratic-eqn.py)
+
+# 17 : Coordinates
+[Co-ordinates](./grade-8/maths/coordinates/coordinates.py)
