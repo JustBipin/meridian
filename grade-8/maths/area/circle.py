@@ -10,7 +10,6 @@ class PiIntroduction(MovingCameraScene):
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
-
         # =========================================================
         # TITLE
         # =========================================================
@@ -56,7 +55,7 @@ class PiIntroduction(MovingCameraScene):
         DLABEL_Y = ARROW_Y - 0.45
         FLAT_Y = DLABEL_Y - 1.0
         CLABEL_Y = FLAT_Y - 0.55
-        RATIO_Y = CLABEL_Y - 0.65
+        CLABEL_Y - 0.65
 
         def true_diam():
             return d_tracker.get_value()
@@ -216,7 +215,7 @@ class PiIntroduction(MovingCameraScene):
             bar = Line(LEFT * 0.55, RIGHT * 0.55, stroke_width=3)
             num = DecimalNumber(C, num_decimal_places=2, font_size=30).next_to(bar, UP, buff=0.06)
             den = DecimalNumber(d, num_decimal_places=2, font_size=30).next_to(bar, DOWN, buff=0.06)
-            frac = VGroup(bar, num, den)
+            VGroup(bar, num, den)
             # Use f-strings to inject the rounded values directly into a single Tex object
             row = MathTex(r"\frac{C}{d} = \frac{" f"{C:.2f}" r"}{" f"{d:.2f}" r"} = 3.14", font_size=32)
             row.next_to(circle, RIGHT, buff=1.2)
@@ -427,7 +426,6 @@ class CircleArea(MovingCameraScene):
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
-
         # =========================================================
         # TITLE
         # =========================================================

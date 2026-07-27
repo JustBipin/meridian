@@ -33,7 +33,6 @@ class ParallelogramArea(MovingCameraScene):
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
-
         # =========================================================
         # TITLE
         # =========================================================
@@ -508,7 +507,6 @@ class RhombusArea(MovingCameraScene):
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
-
         # =========================================================
         # TITLE
         # =========================================================
@@ -756,7 +754,6 @@ class TrapeziumArea(MovingCameraScene):
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
-
         # =========================================================
         # TITLE
         # =========================================================
@@ -1048,7 +1045,6 @@ class QuadrilateralArea(MovingCameraScene):
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
-
         # =========================================================
         # TITLE
         # =========================================================

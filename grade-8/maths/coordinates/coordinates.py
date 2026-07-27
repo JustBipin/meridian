@@ -557,20 +557,24 @@ class CoordinateGeometryIntro(MovingCameraScene):
         x_axis = Line(grid.c2p(-5, 0), grid.c2p(15, 0), stroke_width=4, color=GRAY_D)
         y_axis = Line(grid.c2p(0, -5), grid.c2p(0, 10), stroke_width=4, color=GRAY_D)
 
-        x_labels = VGroup(*[
-            MathTex(txt, font_size=30).next_to(grid.c2p(coord, 0), DOWN)
-            for coord, txt in zip(
-                [2, 10],
-                ["x_1", "x_2"],
-            )
-        ])
-        y_labels = VGroup(*[
-            MathTex(txt, font_size=30).next_to(grid.c2p(0, coord), LEFT)
-            for coord, txt in zip(
-                [1, 7],
-                ["y_1", "y_2"],
-            )
-        ])
+        x_labels = VGroup(
+            *[
+                MathTex(txt, font_size=30).next_to(grid.c2p(coord, 0), DOWN)
+                for coord, txt in zip(
+                    [2, 10],
+                    ["x_1", "x_2"],
+                )
+            ]
+        )
+        y_labels = VGroup(
+            *[
+                MathTex(txt, font_size=30).next_to(grid.c2p(0, coord), LEFT)
+                for coord, txt in zip(
+                    [1, 7],
+                    ["y_1", "y_2"],
+                )
+            ]
+        )
 
         self.play(FadeIn(grid, x_axis, y_axis, x_labels, y_labels))
         self.wait(1)
