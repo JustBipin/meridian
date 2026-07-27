@@ -29,7 +29,6 @@ class AreaIntroduction(MovingCameraScene):
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
-
         # =========================================================
         # TITLE
         # =========================================================
@@ -120,10 +119,7 @@ class AreaIntroduction(MovingCameraScene):
         # =========================================================
 
         area_formula = VGroup(
-            MathTex(
-                r"\text{Area}"
-                r"=\text{Length}\times\text{Breadth}"
-            ),
+            MathTex(r"\text{Area}" r"=\text{Length}\times\text{Breadth}"),
             MathTex(r"=1\times1"),
             MathTex(r"=1\ \text{unit}^{2}", color=GREEN),
         ).arrange(DOWN, aligned_edge=LEFT)
@@ -222,10 +218,7 @@ class AreaIntroduction(MovingCameraScene):
         # NEW FORMULA
 
         rectangle_formula = VGroup(
-            MathTex(
-                r"\text{Area}"
-                r"=\text{Length}\times\text{Breadth}"
-            ),
+            MathTex(r"\text{Area}" r"=\text{Length}\times\text{Breadth}"),
             MathTex(r"=5\times3"),
             MathTex(r"=15\ \mathrm{ft}^{2}", color=GREEN),
         ).arrange(DOWN, aligned_edge=LEFT)
@@ -283,7 +276,6 @@ class TriangleAreaClean(MovingCameraScene):
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
-
         # =========================================================
         # TITLE
         # =========================================================
@@ -601,7 +593,6 @@ class ShadedTriangleAreaQuestion(MovingCameraScene):
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
-
         # =========================================================
         # 1. THE QUESTION (top of frame)
         # =========================================================
@@ -751,7 +742,6 @@ class TriangleAreaArbitrary(MovingCameraScene):
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
-
         # =========================================================
         # TITLE
         # =========================================================
@@ -1065,7 +1055,7 @@ class TriangleAreaArbitrary(MovingCameraScene):
         merged_height_brace = Brace(Line(m_br, m_tr), direction=RIGHT, color=GREY_D, buff=0.15)
         merged_height_label = merged_height_brace.get_text("h").set_color(GREY_D)
 
-        merged_group = VGroup(
+        VGroup(
             rect_1,
             rect_2,
             tri_1,
@@ -1187,7 +1177,6 @@ class TriangleAreaEquilateral(MovingCameraScene):
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
-
         # =========================================================
         # TITLE
         # =========================================================
@@ -1503,7 +1492,6 @@ class TriangleAreaIsosceles(MovingCameraScene):
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
-
         # =========================================================
         # TITLE
         # =========================================================
