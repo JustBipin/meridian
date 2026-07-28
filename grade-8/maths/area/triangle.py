@@ -252,7 +252,7 @@ class AreaIntroduction(MovingCameraScene):
         self.wait(3)
 
 
-class TriangleAreaClean(MovingCameraScene):
+class AreaRightAngledTriangle(MovingCameraScene):
     """
     Area of Right Angled Triangles
     ---------------------------
@@ -716,7 +716,7 @@ class ShadedTriangleAreaQuestion(MovingCameraScene):
         self.wait(3)
 
 
-class TriangleAreaArbitrary(MovingCameraScene):
+class AreaArbitraryTriangle(MovingCameraScene):
     """
     Area of an Arbitrary Triangle Animation
     --------------------------------------
@@ -1141,7 +1141,7 @@ class TriangleAreaArbitrary(MovingCameraScene):
         self.wait(6)
 
 
-class TriangleAreaEquilateral(MovingCameraScene):
+class AreaEquilateralTriangle(MovingCameraScene):
     """
     Area of an Equilateral Triangle
     -------------------------------
@@ -1458,7 +1458,7 @@ class TriangleAreaEquilateral(MovingCameraScene):
         self.wait(6)
 
 
-class TriangleAreaIsosceles(MovingCameraScene):
+class AreaIsoscelesTriangle(MovingCameraScene):
     """
     Area of an Isosceles Triangle
     -----------------------------
