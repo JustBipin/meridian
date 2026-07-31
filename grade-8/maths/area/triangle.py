@@ -1,6 +1,8 @@
 import numpy as np
+from kokoro_mv import KokoroService
 from manim import *
 from manim_themes.manim_theme import apply_theme
+from manim_voiceover import VoiceoverScene
 
 
 class AreaIntroduction(MovingCameraScene):
@@ -252,44 +254,51 @@ class AreaIntroduction(MovingCameraScene):
         self.wait(3)
 
 
-class AreaRightAngledTriangle(MovingCameraScene):
+class AreaRightAngledTriangle(VoiceoverScene, MovingCameraScene):
     """
-    Area of Right Angled Triangles
-    ---------------------------
-    Concept:
-        A scene demonstrating that the area of a right-angled triangle
-        is exactly half the area of its bounding rectangle.
-
-    Flow:
-    1. Displays a static b x h rectangle, centered, with braces.
-    2. Slices the rectangle diagonally.
-    3. Separates both halves and labels them.
-    4. Proves congruency by rotating the red triangle onto the blue one.
-    5. Once the red triangle fades away, labels the base and height of
-        the remaining blue triangle.
-    6. Concludes with the classic 1/2 * b * h formula.
+    Area of Right Angled Triangle
+    -----------------------------
+    Derivation with Kokoro voiceover.
     """
 
     def setup(self):
-        """Initializes scene configurations and applies the 'london' visual theme."""
         super().setup()
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
+        # =========================================================
+        # KOKORO VOICE CONFIGURATION
+        # =========================================================
+
+        self.set_speech_service(
+            KokoroService(
+                voice="am_adam",
+                lang="en-us",
+                speed=1.0,
+            )
+        )
+
         # =========================================================
         # TITLE
         # =========================================================
 
         title = Text("Area of Triangles", font_size=64, weight=BOLD)
 
-        self.play(Write(title))
+        with self.voiceover(
+            text=(
+                "In this lesson, we will discover why the area of "
+                "a right angled triangle is exactly one half of "
+                "its base multiplied by its height."
+            )
+        ) as tracker:
+            self.play(Write(title), run_time=tracker.duration)
 
-        self.wait(1)
         self.play(FadeOut(title))
 
         # =========================================================
-        # 1. ENVIRONMENT & GRID SETUP
+        # GRID SETUP
         # =========================================================
+
         grid = NumberPlane(
             x_range=[-20, 20, 1],
             y_range=[-12, 12, 1],
@@ -301,11 +310,13 @@ class AreaRightAngledTriangle(MovingCameraScene):
             axis_config={"stroke_opacity": 0},
             faded_line_ratio=0,
         )
+
         self.add(grid)
 
         # =========================================================
-        # 2. GEOMETRY DEFINITION (centered, room above AND below)
+        # RECTANGLE GEOMETRY
         # =========================================================
+
         bottom_left = grid.c2p(-3, -1.5)
         bottom_right = grid.c2p(3, -1.5)
         top_right = grid.c2p(3, 1.5)
@@ -323,144 +334,201 @@ class AreaRightAngledTriangle(MovingCameraScene):
         )
 
         # =========================================================
-        # 3. DIMENSIONS
+        # DIMENSIONS
         # =========================================================
+
         base_brace = Brace(Line(bottom_left, bottom_right), direction=DOWN, color=GREY_D, buff=0.15)
+
         base_label = base_brace.get_text("b").set_color(GREY_D)
 
         height_brace = Brace(Line(bottom_right, top_right), direction=RIGHT, color=GREY_D, buff=0.15)
+
         height_label = height_brace.get_text("h").set_color(GREY_D)
 
-        # =========================================================
-        # 4. INITIAL DISPLAY & STATIC FORMULA HOLD
-        # =========================================================
-        #
         intro_text = Text(
             "Take any rectangle with base b and height h.",
             font_size=30,
         ).to_edge(UP, buff=0.6)
 
-        rect_formula = MathTex(r"\text{Rectangle Area} = b \times h").to_edge(DOWN, buff=0.6)
+        rect_formula = MathTex(r"\text{Rectangle Area}=b\times h").to_edge(DOWN, buff=0.6)
 
-        self.play(FadeIn(rect), run_time=1)
-        self.play(FadeIn(base_brace), Write(base_label), run_time=1)
-        self.play(FadeIn(height_brace), Write(height_label), run_time=1)
-        self.play(Write(intro_text))
+        # =========================================================
+        # SHOW RECTANGLE
+        # =========================================================
+
+        with self.voiceover(
+            text=(
+                "Let's begin with a rectangle having base b and height h. "
+                "The area of this rectangle is base multiplied by height."
+            )
+        ) as tracker:
+            self.play(FadeIn(rect), run_time=tracker.duration * 0.4)
+
+            self.play(FadeIn(base_brace), Write(base_label), run_time=tracker.duration * 0.3)
+
+            self.play(FadeIn(height_brace), Write(height_label), run_time=tracker.duration * 0.3)
+
+        self.play(Write(intro_text), Write(rect_formula))
+
         self.wait(1)
 
-        self.play(Write(rect_formula), run_time=1)
-
-        self.wait(2)
         self.play(FadeOut(intro_text), FadeOut(rect_formula))
 
         # =========================================================
-        # 5. THE DIAGONAL SPLIT
+        # DIAGONAL SPLIT
         # =========================================================
+
         cut_text = Text("Now slice it along the diagonal.", font_size=28).to_edge(DOWN, buff=0.6)
-        self.play(Write(cut_text))
 
         diagonal = Line(bottom_left, top_right, stroke_color=GREEN, stroke_width=4)
-        self.play(Create(diagonal), run_time=1.5)
-        self.wait(1)
+
+        with self.voiceover(text=("Now imagine slicing the rectangle along its diagonal.")) as tracker:
+            self.play(Write(cut_text), run_time=tracker.duration * 0.3)
+
+            self.play(Create(diagonal), run_time=tracker.duration * 0.7)
+
         self.play(FadeOut(cut_text))
 
-        # Two complementary right-angled triangles (second one is now RED)
+        # =========================================================
+        # CREATE TWO TRIANGLES
+        # =========================================================
+
         t1 = Polygon(
             bottom_left, bottom_right, top_right, fill_color=BLUE, fill_opacity=0.7, stroke_color=BLUE, stroke_width=2
         )
+
         t2 = Polygon(bottom_left, top_right, top_left, fill_color=RED, fill_opacity=0.5, stroke_color=RED, stroke_width=2)
 
-        # Hot-swap the rectangle+diagonal for the two individual triangles
-        self.play(FadeIn(t1, t2), FadeOut(rect, diagonal))
-        self.wait(0.5)
+        with self.voiceover(
+            text=("The diagonal creates two right angled triangles. Each triangle is a part of the original rectangle.")
+        ) as tracker:
+            self.play(FadeIn(t1), FadeIn(t2), FadeOut(rect), FadeOut(diagonal), run_time=tracker.duration)
 
         # =========================================================
-        # 6. SMALL, SAFE SEPARATION (stays well inside the frame)
+        # SEPARATE TRIANGLES
         # =========================================================
-        self.play(
-            t1.animate.shift(RIGHT * 0.9 + DOWN * 0.5),
-            t2.animate.shift(LEFT * 0.9 + UP * 0.5),
-            FadeOut(base_brace),
-            FadeOut(base_label),
-            FadeOut(height_brace),
-            FadeOut(height_label),
-            run_time=1.5,
-        )
-        self.wait(1)
+
+        with self.voiceover(text=("Let's separate the two triangles so that we can compare them.")) as tracker:
+            self.play(
+                t1.animate.shift(RIGHT * 0.9 + DOWN * 0.5),
+                t2.animate.shift(LEFT * 0.9 + UP * 0.5),
+                FadeOut(base_brace),
+                FadeOut(base_label),
+                FadeOut(height_brace),
+                FadeOut(height_label),
+                run_time=tracker.duration,
+            )
 
         t1_label = Text("Triangle 1", font_size=24, color=BLUE).next_to(t1, DOWN, buff=0.3)
+
         t2_label = Text("Triangle 2", font_size=24, color=RED).next_to(t2, UP, buff=0.3)
-        self.play(Write(t1_label), Write(t2_label))
-        self.wait(1.5)
+
+        with self.voiceover(text=("Let's call these Triangle One and Triangle Two.")) as tracker:
+            self.play(Write(t1_label), Write(t2_label), run_time=tracker.duration)
+
+        self.wait(1)
 
         # =========================================================
-        # 7. PROVE CONGRUENCY BY ROTATING THE RED TRIANGLE ONTO THE BLUE
+        # CONGRUENCY PROOF
         # =========================================================
+
         congruent_text = Text(
-            "Let's check: Are these two triangles really identical?",
+            "Are these triangles identical?",
             font_size=28,
         ).to_edge(DOWN, buff=0.6)
-        self.play(Write(congruent_text))
-        self.wait(1.5)
 
-        self.play(FadeOut(congruent_text), FadeOut(t1_label), FadeOut(t2_label))
+        with self.voiceover(
+            text=("Are these two triangles really identical? Let's rotate one triangle and place it on top of the other.")
+        ) as tracker:
+            self.play(Write(congruent_text), run_time=tracker.duration * 0.3)
 
-        # The second triangle flips (rotates 180 degrees) about its own center...
-        self.play(
-            Rotate(t2, angle=PI, about_point=t2.get_center()),
-            run_time=1.5,
-        )
-        # ...then slides down to land exactly on the blue triangle.
-        self.play(t2.animate.move_to(t1.get_center()), run_time=1.2)
-        self.wait(0.5)
+            self.play(
+                FadeOut(congruent_text),
+                FadeOut(t1_label),
+                FadeOut(t2_label),
+            )
+
+            self.play(Rotate(t2, angle=PI, about_point=t2.get_center()), run_time=tracker.duration * 0.4)
+
+            self.play(t2.animate.move_to(t1.get_center()), run_time=tracker.duration * 0.3)
 
         match_text = Text("Perfect match: same shape, same size.", font_size=28).to_edge(DOWN, buff=0.6)
-        self.play(Write(match_text))
+
+        with self.voiceover(
+            text=("Perfect match. Both triangles have the same shape and the same size, which means they are congruent.")
+        ) as tracker:
+            self.play(Write(match_text), run_time=tracker.duration)
+
         self.wait(2)
 
-        # fade the red copy, leaving the blue one.
-        self.play(FadeOut(t2), FadeOut(match_text))
+        # Part 2 continues from here...
 
         # =========================================================
-        # 8. MOVE THE BLUE TRIANGLE TO THE CENTER
+        # REMOVE RED TRIANGLE, KEEP BLUE TRIANGLE
         # =========================================================
-        self.play(t1.animate.move_to(UP * 0.6), run_time=1.2)
+
+        with self.voiceover(
+            text=("Since the two triangles are identical, each one must represent exactly half of the original rectangle.")
+        ) as tracker:
+            self.play(FadeOut(t2), FadeOut(match_text), run_time=tracker.duration)
+
+        # =========================================================
+        # MOVE TRIANGLE TO CENTER
+        # =========================================================
+
+        with self.voiceover(text=("Now let's look at one triangle and rebuild the rectangle that it came from.")) as tracker:
+            self.play(t1.animate.move_to(UP * 0.6), run_time=tracker.duration)
+
         self.wait(0.5)
 
-        # Complete the "ghost" rectangle with dotted lines for the two
-        # sides the triangle doesn't have (top and left), unfilled.
+        # =========================================================
+        # GHOST RECTANGLE
+        # =========================================================
+
         bl, br, tr = t1.get_vertices()[0], t1.get_vertices()[1], t1.get_vertices()[2]
+
         tl = bl + (tr - br)
 
         dashed_top = DashedLine(tl, tr, color=GREY_D, stroke_width=2)
+
         dashed_left = DashedLine(bl, tl, color=GREY_D, stroke_width=2)
 
-        self.play(FadeIn(dashed_top), FadeIn(dashed_left), run_time=1.2)
-        self.wait(0.5)
+        with self.voiceover(
+            text=("The missing sides complete the original rectangle. The triangle still has the same base and height.")
+        ) as tracker:
+            self.play(FadeIn(dashed_top), FadeIn(dashed_left), run_time=tracker.duration)
 
         # =========================================================
-        # 9. LABEL THE TRIANGLE'S BASE AND HEIGHT
+        # BASE AND HEIGHT LABELS
         # =========================================================
+
         base_edge = Line(t1.get_vertices()[0], t1.get_vertices()[1])
+
         height_edge = Line(t1.get_vertices()[1], t1.get_vertices()[2])
 
         tri_base_brace = Brace(base_edge, direction=DOWN, color=GREY_D, buff=0.15)
+
         tri_base_label = tri_base_brace.get_text("b").set_color(GREY_D)
 
         tri_height_brace = Brace(height_edge, direction=RIGHT, color=GREY_D, buff=0.15)
+
         tri_height_label = tri_height_brace.get_text("h").set_color(GREY_D)
 
-        self.play(
-            FadeIn(tri_base_brace),
-            Write(tri_base_label),
-            FadeIn(tri_height_brace),
-            Write(tri_height_label),
-        )
-        self.wait(1.5)
+        with self.voiceover(
+            text=("The base of the triangle is b, and the height is h. These are exactly the dimensions of the rectangle.")
+        ) as tracker:
+            self.play(
+                FadeIn(tri_base_brace),
+                Write(tri_base_label),
+                FadeIn(tri_height_brace),
+                Write(tri_height_label),
+                run_time=tracker.duration,
+            )
 
         # =========================================================
-        # 10. FINAL GEOMETRIC TAKEAWAY, WRITTEN BELOW THE TRIANGLE
+        # FINAL AREA FORMULA
         # =========================================================
+
         triangle_group = VGroup(
             t1,
             dashed_top,
@@ -472,105 +540,115 @@ class AreaRightAngledTriangle(MovingCameraScene):
         )
 
         final_formula = (
-            MathTex(
-                r"\text{Area of Right Angled Triangle} = \frac{1}{2} \times b \times h",
-            )
+            MathTex(r"\text{Area of Right Angled Triangle}" r"=\frac{1}{2}\times b\times h")
             .scale(0.9)
             .next_to(triangle_group, DOWN, buff=0.6)
         )
 
-        # Create a rectangle around the formula
         box = SurroundingRectangle(
             final_formula,
-            color=BLUE,
-            buff=0.2,  # Space between text and rectangle
-            corner_radius=0.1,  # Optional: rounded corners
-        )
-
-        self.play(Write(final_formula), Create(box))
-
-        self.wait(6)
-
-        # =========================================================
-        # 11. ISOSCELES RIGHT-ANGLED TRIANGLE EXTENSION
-        # =========================================================
-        iso_intro = Text("For an Isosceles Right-Angled Triangle:", font_size=28).to_edge(UP, buff=0.6)
-
-        self.wait(0.5)
-
-        # Shrink the base to match the height (3 units)
-        current_bl = t1.get_vertices()[0]
-        new_br = current_bl + RIGHT * 3
-        new_tr = new_br + UP * 3
-
-        # Create the target triangle and move it to ORIGIN first
-        iso_t1 = Polygon(
-            current_bl, new_br, new_tr, fill_color=BLUE, fill_opacity=0.7, stroke_color=BLUE, stroke_width=2
-        ).move_to((ORIGIN + (UP * 0.5)))
-
-        # Extract the freshly centered vertices to build the dashed lines
-        iso_bl = iso_t1.get_vertices()[0]
-        iso_br = iso_t1.get_vertices()[1]
-        iso_tr = iso_t1.get_vertices()[2]
-        iso_tl = iso_bl + (iso_tr - iso_br)  # Top-left vertex relative to the centered triangle
-
-        iso_dashed_top = DashedLine(iso_tl, iso_tr, color=GREY_D, stroke_width=2)
-        iso_dashed_left = DashedLine(iso_bl, iso_tl, color=GREY_D, stroke_width=2)
-
-        # Build braces using the perfectly centered edges
-        iso_base_edge = Line(iso_bl, iso_br)
-        iso_height_edge = Line(iso_br, iso_tr)
-
-        iso_base_brace = Brace(iso_base_edge, direction=DOWN, color=GREY_D, buff=0.15)
-        iso_base_label = iso_base_brace.get_text("b").set_color(GREY_D)
-
-        iso_height_brace = Brace(iso_height_edge, direction=RIGHT, color=GREY_D, buff=0.15)
-        iso_height_label = iso_height_brace.get_text("b").set_color(GREY_D)
-
-        # Morph everything smoothly into the center layout
-        self.play(
-            FadeOut(final_formula),
-            FadeOut(box),
-            Transform(t1, iso_t1),
-            Transform(dashed_top, iso_dashed_top),
-            Transform(dashed_left, iso_dashed_left),
-            Transform(tri_base_brace, iso_base_brace),
-            Transform(tri_base_label, iso_base_label),
-            Transform(tri_height_brace, iso_height_brace),
-            Transform(tri_height_label, iso_height_label),
-            run_time=2,
-        )
-        self.wait(1)
-
-        self.play(
-            Write(iso_intro),
-        )
-        self.wait()
-
-        # Simplified formula group
-        iso_triangle_group = VGroup(
-            t1, dashed_top, dashed_left, tri_base_brace, tri_base_label, tri_height_brace, tri_height_label
-        )
-
-        iso_formula = (
-            MathTex(
-                r"\text{Area} = \frac{1}{2} \times b \times b = \frac{1}{2} b^2",
-            )
-            .scale(0.9)
-            .next_to(iso_triangle_group, DOWN, buff=0.6)
-        )
-
-        iso_box = SurroundingRectangle(
-            iso_formula,
             color=BLUE,
             buff=0.2,
             corner_radius=0.1,
         )
 
-        # Final reveal
-        self.play(Write(iso_formula), run_time=1.5)
-        self.play(Create(iso_box), run_time=1)
+        with self.voiceover(
+            text=(
+                "Since the triangle is half of the rectangle, "
+                "its area is one half of the rectangle area. "
+                "Therefore, the area is one half times base times height."
+            )
+        ) as tracker:
+            self.play(Write(final_formula), Create(box), run_time=tracker.duration)
+
         self.wait(3)
+
+        # =========================================================
+        # ISOSCELES RIGHT TRIANGLE EXTENSION
+        # =========================================================
+
+        iso_intro = Text("For an Isosceles Right-Angled Triangle:", font_size=28).to_edge(UP, buff=0.6)
+
+        current_bl = t1.get_vertices()[0]
+
+        new_br = current_bl + RIGHT * 3
+        new_tr = new_br + UP * 3
+
+        iso_t1 = Polygon(
+            current_bl, new_br, new_tr, fill_color=BLUE, fill_opacity=0.7, stroke_color=BLUE, stroke_width=2
+        ).move_to(ORIGIN + UP * 0.5)
+
+        iso_bl = iso_t1.get_vertices()[0]
+        iso_br = iso_t1.get_vertices()[1]
+        iso_tr = iso_t1.get_vertices()[2]
+
+        iso_tl = iso_bl + (iso_tr - iso_br)
+
+        iso_dashed_top = DashedLine(iso_tl, iso_tr, color=GREY_D, stroke_width=2)
+
+        iso_dashed_left = DashedLine(iso_bl, iso_tl, color=GREY_D, stroke_width=2)
+
+        iso_base_edge = Line(iso_bl, iso_br)
+
+        iso_height_edge = Line(iso_br, iso_tr)
+
+        iso_base_brace = Brace(iso_base_edge, direction=DOWN, color=GREY_D, buff=0.15)
+
+        iso_base_label = iso_base_brace.get_text("b").set_color(GREY_D)
+
+        iso_height_brace = Brace(iso_height_edge, direction=RIGHT, color=GREY_D, buff=0.15)
+
+        iso_height_label = iso_height_brace.get_text("b").set_color(GREY_D)
+
+        with self.voiceover(
+            text=("Now consider an isosceles right angled triangle. In this special case, the base and height are equal.")
+        ) as tracker:
+            self.play(
+                FadeOut(final_formula),
+                FadeOut(box),
+                Transform(t1, iso_t1),
+                Transform(dashed_top, iso_dashed_top),
+                Transform(dashed_left, iso_dashed_left),
+                Transform(tri_base_brace, iso_base_brace),
+                Transform(tri_base_label, iso_base_label),
+                Transform(tri_height_brace, iso_height_brace),
+                Transform(tri_height_label, iso_height_label),
+                run_time=tracker.duration,
+            )
+
+        self.play(Write(iso_intro))
+
+        # =========================================================
+        # SIMPLIFIED FORMULA
+        # =========================================================
+
+        iso_triangle_group = VGroup(
+            t1, dashed_top, dashed_left, tri_base_brace, tri_base_label, tri_height_brace, tri_height_label
+        )
+
+        iso_formula = (
+            MathTex(r"\text{Area}" r"=\frac{1}{2}\times b\times b" r"=\frac{1}{2}b^2")
+            .scale(0.9)
+            .next_to(iso_triangle_group, DOWN, buff=0.6)
+        )
+
+        iso_box = SurroundingRectangle(iso_formula, color=BLUE, buff=0.2, corner_radius=0.1)
+
+        with self.voiceover(
+            text=("Since both sides are b, we replace the height with b. The formula becomes one half b squared.")
+        ) as tracker:
+            self.play(Write(iso_formula), run_time=tracker.duration * 0.7)
+
+            self.play(Create(iso_box), run_time=tracker.duration * 0.3)
+
+        # =========================================================
+        # END
+        # =========================================================
+
+        with self.voiceover(text=("And that is the derivation of the area formula for a right angled triangle.")) as tracker:
+            self.wait(tracker.duration)
+
+        self.wait(2)
 
 
 class ShadedTriangleAreaQuestion(MovingCameraScene):
@@ -716,45 +794,48 @@ class ShadedTriangleAreaQuestion(MovingCameraScene):
         self.wait(3)
 
 
-class AreaArbitraryTriangle(MovingCameraScene):
+class AreaArbitraryTriangle(VoiceoverScene, MovingCameraScene):
     """
     Area of an Arbitrary Triangle Animation
-    --------------------------------------
-    Concept:
-        Deriving the area formula of an arbitrary triangle by enclosing it in a
-        rectangle and splitting it into two simpler right-angled triangles.
 
-    Flow:
-    1. Title: "Area of Arbitrary Triangle"
-    2. Environment & Grid Setup: Faded infinite coordinate grid.
-    3. Intro Diagram: Display an arbitrary triangle with external height and base markers.
-    4. Bounding Rectangle: Enclose the triangle in a 5x2 bounding rectangle.
-    5. Splitting: Split the rectangle and triangle vertically from the triangle's apex.
-    6. Separation: Physically separate the two resulting right-angled triangle/rectangle pairs ($R_1, T_1$ and $R_2, T_2$).
-    7. Algebraic Link: Show that each right triangle is exactly half of its bounding sub-rectangle.
-    8. Recomposition: Merge the sub-rectangles and sub-triangles back into a unified shape.
-    9. Final Substitution: Substitute $R = b \times h$ to arrive at $\text{Area} = \frac{1}{2} \times b \times h$.
+    Voiceover style:
+        - Concept-first explanation
+        - Short sentences
+        - Visuals explain alongside narration
+        - Inspired by 3Blue1Brown pacing
     """
 
     def setup(self):
-        """Initializes scene configurations and applies the 'london' visual theme."""
         super().setup()
         apply_theme(manim_scene=self, theme_name="london")
 
     def construct(self):
+        self.set_speech_service(KokoroService(voice="af_sarah", lang="en-us", speed=0.95, volume=1.1))
+
         # =========================================================
         # TITLE
         # =========================================================
 
         title = Text("Area of an Arbitrary Triangle", font_size=64, weight=BOLD)
 
-        self.play(Write(title))
+        with self.voiceover(
+            text="""
+            How can we find the area of a triangle?
+            
+            Instead of just memorizing a formula,
+            let's discover where it comes from.
+            """
+        ) as tracker:
+            self.play(Write(title), run_time=tracker.duration)
+
         self.wait(1)
+
         self.play(FadeOut(title))
 
         # =========================================================
-        # 1. ENVIRONMENT & GRID SETUP
+        # ENVIRONMENT & GRID SETUP
         # =========================================================
+
         grid = NumberPlane(
             x_range=[-20, 20, 1],
             y_range=[-12, 12, 1],
@@ -766,12 +847,13 @@ class AreaArbitraryTriangle(MovingCameraScene):
             axis_config={"stroke_opacity": 0},
             faded_line_ratio=0,
         )
+
         self.add(grid)
 
         # =========================================================
-        # 2. INTRO DIAGRAM: a normal (non-right) triangle with base,
-        #    height marked OUTSIDE on the right, and "Area = ?"
+        # INTRO DIAGRAM
         # =========================================================
+
         intro_bl = grid.c2p(-2, -1.2)
         intro_br = grid.c2p(2, -1.2)
         intro_apex = grid.c2p(-0.5, 1.6)
@@ -786,27 +868,41 @@ class AreaArbitraryTriangle(MovingCameraScene):
             stroke_width=4,
         )
 
-        # Height mark: a vertical dotted line rising straight up from the
-        # triangle's lower-right point to the apex's height, tied back to the
-        # apex with a dotted horizontal line so it's clearly the same height.
-        height_top = grid.c2p(2, 1.6)  # directly above intro_br, level with the apex
+        height_top = grid.c2p(2, 1.6)
+
         apex_connector = DashedLine(intro_apex, height_top, color=GREY_D, stroke_width=2)
+
         height_line = DashedLine(intro_br, height_top, color=GREY_D, stroke_width=2)
 
         intro_base_brace = Brace(Line(intro_bl, intro_br), direction=DOWN, color=GREY_D, buff=0.15)
+
         intro_base_label = intro_base_brace.get_text("b").set_color(GREY_D)
 
         intro_height_brace = Brace(height_line, direction=RIGHT, color=GREY_D, buff=0.15)
+
         intro_height_label = intro_height_brace.get_text("h").set_color(GREY_D)
 
         area_q = MathTex(r"\text{Area} = \, ?").next_to(intro_base_label, DOWN, buff=0.6)
 
-        self.play(FadeIn(intro_tri), run_time=1)
-        self.play(FadeIn(intro_base_brace), Write(intro_base_label), run_time=1)
-        self.play(Create(apex_connector), run_time=0.8)
-        self.play(FadeIn(intro_height_brace), Write(intro_height_label), run_time=1)
-        self.play(Write(area_q))
-        self.wait(2)
+        with self.voiceover(
+            text="""
+            Here is a triangle.
+            
+            We know its base and its height,
+            but we want to understand why its area has this special formula.
+            """
+        ) as tracker:
+            self.play(FadeIn(intro_tri), run_time=tracker.duration * 0.3)
+
+            self.play(FadeIn(intro_base_brace), Write(intro_base_label), run_time=tracker.duration * 0.2)
+
+            self.play(Create(apex_connector), run_time=tracker.duration * 0.15)
+
+            self.play(FadeIn(intro_height_brace), Write(intro_height_label), run_time=tracker.duration * 0.2)
+
+            self.play(Write(area_q), run_time=tracker.duration * 0.15)
+
+        self.wait(1)
 
         intro_group = VGroup(
             intro_tri,
@@ -817,19 +913,20 @@ class AreaArbitraryTriangle(MovingCameraScene):
             intro_height_label,
             area_q,
         )
+
         self.play(FadeOut(intro_group), run_time=1)
 
         # =========================================================
-        # 3. THE TRIANGLE, DRAWN FIRST
-        #    (same geometry the rectangle will later wrap around: the
-        #    apex sits 3 units left of the rectangle's top-right point)
+        # MAIN TRIANGLE
         # =========================================================
+
         r_bl = grid.c2p(-2.5, -0.2)
         r_br = grid.c2p(2.5, -0.2)
         r_tr = grid.c2p(2.5, 1.8)
         r_tl = grid.c2p(-2.5, 1.8)
-        apex = grid.c2p(-0.5, 1.8)  # top_right is at x=2.5, so apex_x = 2.5 - 3 = -0.5
-        foot = grid.c2p(-0.5, -0.2)  # foot of the apex on the base
+
+        apex = grid.c2p(-0.5, 1.8)
+        foot = grid.c2p(-0.5, -0.2)
 
         main_tri = Polygon(
             r_bl,
@@ -841,13 +938,21 @@ class AreaArbitraryTriangle(MovingCameraScene):
             stroke_width=4,
         )
 
-        self.play(FadeIn(main_tri), run_time=1.2)
-        self.wait(1)
+        with self.voiceover(
+            text="""
+            The first step is to surround this triangle with a rectangle.
+            
+            The rectangle will have the same base and the same height.
+            """
+        ) as tracker:
+            self.play(FadeIn(main_tri), run_time=tracker.duration)
+
+        self.wait(0.5)
 
         # =========================================================
-        # 4. NOW BRING IN A RECTANGLE AROUND IT (black), 5 x 2 —
-        #    and only once it's there, label it b (bottom) and h (right side)
+        # RECTANGLE
         # =========================================================
+
         rect_caption = Text("Let's draw a rectangle around the triangle.", font_size=28).to_edge(UP, buff=0.6)
 
         rect_outline = Polygon(
@@ -859,45 +964,66 @@ class AreaArbitraryTriangle(MovingCameraScene):
             stroke_width=4,
         )
 
-        self.play(Write(rect_caption))
-        self.play(Create(rect_outline), run_time=1.5)
-        self.wait(0.5)
+        with self.voiceover(
+            text="""
+            Notice something important.
+            
+            The rectangle and the triangle share the same base and height.
+            """
+        ) as tracker:
+            self.play(Write(rect_caption), run_time=tracker.duration * 0.3)
+
+            self.play(Create(rect_outline), run_time=tracker.duration * 0.7)
+
         self.play(FadeOut(rect_caption))
 
         base_brace = Brace(Line(r_bl, r_br), direction=DOWN, color=GREY_D, buff=0.15)
+
         base_label = base_brace.get_text("b").set_color(GREY_D)
 
         height_brace = Brace(Line(r_br, r_tr), direction=RIGHT, color=GREY_D, buff=0.15)
+
         height_label = height_brace.get_text("h").set_color(GREY_D)
 
-        self.play(FadeIn(base_brace), Write(base_label), run_time=1)
-        self.play(FadeIn(height_brace), Write(height_label), run_time=1)
-        self.wait(1.5)
+        self.play(FadeIn(base_brace), Write(base_label))
 
-        # =========================================================
-        # 5. SPLIT THE RECTANGLE WHERE THE APEX SITS
-        #    Left piece: 2 x 2   |   Right piece: 3 x 2
-        #    The pieces are PHYSICALLY pulled apart, each one keeping
-        #    its right-angled triangle inside it.
-        # =========================================================
-        split_text = Text("Split the rectangle right where the apex sits.", font_size=28).to_edge(DOWN, buff=0.6)
-        self.play(Write(split_text))
+        self.play(FadeIn(height_brace), Write(height_label))
 
-        split_line = Line(foot, apex, color=BLACK, stroke_width=3)
-        self.play(Create(split_line), run_time=1)
         self.wait(1)
+
+        # =========================================================
+        # SPLIT RECTANGLE
+        # =========================================================
+
+        split_text = Text("Split the rectangle right where the apex sits.", font_size=28).to_edge(DOWN, buff=0.6)
+
+        with self.voiceover(
+            text="""
+            Now we cut the rectangle along the triangle's height.
+            
+            This separates the shape into two smaller pieces.
+            """
+        ) as tracker:
+            self.play(Write(split_text), run_time=tracker.duration * 0.4)
+
+            split_line = Line(foot, apex, color=BLACK, stroke_width=3)
+
+            self.play(Create(split_line), run_time=tracker.duration * 0.6)
+
+        self.wait(1)
+
         self.play(FadeOut(split_text))
 
-        # The whole-rectangle braces no longer describe a single piece, so retire them.
         self.play(
             FadeOut(base_brace),
             FadeOut(base_label),
             FadeOut(height_brace),
             FadeOut(height_label),
-            run_time=0.8,
         )
 
-        # Rebuild the same two regions as self-contained, separable pieces.
+        # =========================================================
+        # CREATE TWO TRIANGLE / RECTANGLE PAIRS
+        # =========================================================
 
         tri_1 = Polygon(
             r_bl,
@@ -908,6 +1034,7 @@ class AreaArbitraryTriangle(MovingCameraScene):
             stroke_color=BLUE,
             stroke_width=3,
         )
+
         tri_2 = Polygon(
             foot,
             r_br,
@@ -944,89 +1071,113 @@ class AreaArbitraryTriangle(MovingCameraScene):
             FadeIn(rect_2),
             run_time=1,
         )
-        self.wait(0.5)
 
         r1_shapes = VGroup(tri_1, rect_1)
+
         r2_shapes = VGroup(tri_2, rect_2)
 
-        split_shift = 0.8
-        split_lift = 0.5
-        self.play(
-            r1_shapes.animate.shift(LEFT * split_shift + UP * split_lift),
-            r2_shapes.animate.shift(RIGHT * split_shift + UP * split_lift),
-            run_time=1.5,
-        )
+        with self.voiceover(
+            text="""
+            Each half of the triangle lives inside its own rectangle.
+            
+            Let's separate these two pieces and look at them individually.
+            """
+        ) as tracker:
+            self.play(
+                r1_shapes.animate.shift(LEFT * 0.8 + UP * 0.5),
+                r2_shapes.animate.shift(RIGHT * 0.8 + UP * 0.5),
+                run_time=tracker.duration,
+            )
+
         self.wait(0.5)
 
-        # Labels sit OUTSIDE each piece: R above, T below.
+        # Labels
+
         r1_label = MathTex("R_1").next_to(rect_1, UP, buff=0.25)
+
         t1_label = MathTex("T_1", color=BLUE).next_to(rect_1, DOWN, buff=0.25)
+
         r2_label = MathTex("R_2").next_to(rect_2, UP, buff=0.25)
+
         t2_label = MathTex("T_2", color=RED).next_to(rect_2, DOWN, buff=0.25)
 
         self.play(Write(r1_label), Write(r2_label))
-        self.wait(0.5)
-        self.play(Write(t1_label), Write(t2_label))
-        self.wait(1.5)
 
-        # =========================================================
-        # A quick index/key for what each label means, before the algebra.
-        # =========================================================
+        self.play(Write(t1_label), Write(t2_label))
+
+        self.wait(1)
+
         figure_group = VGroup(r1_shapes, r2_shapes, r1_label, r2_label, t1_label, t2_label)
 
-        index_text = Text(
-            "R\u2081 = rectangle      T\u2081 = right-angled triangle inside R\u2081\n"
-            "R\u2082 = rectangle      T\u2082 = right-angled triangle inside R\u2082",
-            font_size=24,
-            line_spacing=1.2,
-        ).next_to(figure_group, DOWN, buff=0.6)
-
-        self.play(Write(index_text))
-        self.wait(2.5)
-        self.play(FadeOut(index_text))
+        with self.voiceover(
+            text="""
+            The diagonal of a rectangle always divides it into two equal areas.
+            
+            That means each triangle is exactly half of its rectangle.
+            """
+        ) as tracker:
+            self.wait(tracker.duration)
 
         # =========================================================
-        # 6. THE ALGEBRA: EACH RIGHT TRIANGLE IS HALF ITS RECTANGLE
+        # ALGEBRA
         # =========================================================
-        eq1 = MathTex(r"T_1", r"=", r"\frac{1}{2}", r"R_1").set_color_by_tex_to_color_map({"T_1": BLUE})
-        eq2 = MathTex(r"T_2", r"=", r"\frac{1}{2}", r"R_2").set_color_by_tex_to_color_map({"T_2": RED})
+
+        eq1 = MathTex(r"T_1", r"=", r"\frac{1}{2}", r"R_1")
+
+        eq2 = MathTex(r"T_2", r"=", r"\frac{1}{2}", r"R_2")
 
         eq_group = VGroup(eq1, eq2).arrange(RIGHT, buff=1.2).next_to(figure_group, DOWN, buff=0.7)
 
-        self.play(Write(eq1))
-        self.wait(0.5)
-        self.play(Write(eq2))
-        self.wait(1.5)
+        with self.voiceover(
+            text="""
+            So the first triangle has half the area of the first rectangle.
+            
+            And the second triangle has half the area of the second rectangle.
+            """
+        ) as tracker:
+            self.play(Write(eq1), Write(eq2), run_time=tracker.duration)
 
-        sum_eq = MathTex(
-            r"T_1", r"+", r"T_2", r"=", r"\frac{1}{2}", r"(", r"R_1", r"+", r"R_2", r")"
-        ).set_color_by_tex_to_color_map({"T_1": BLUE, "T_2": RED})
-        sum_eq.next_to(eq_group, DOWN, buff=0.5)
+        sum_eq = MathTex(r"T_1", r"+", r"T_2", r"=", r"\frac{1}{2}", r"(", r"R_1", r"+", r"R_2", r")").next_to(
+            eq_group, DOWN, buff=0.5
+        )
 
-        self.play(Write(sum_eq), run_time=1.5)
-        self.wait(2)
+        with self.voiceover(
+            text="""
+            Adding the two pieces together gives the whole triangle.
+            
+            And the two rectangles together give the whole rectangle.
+            """
+        ) as tracker:
+            self.play(Write(sum_eq), run_time=tracker.duration)
 
-        self.play(FadeOut(eq1), FadeOut(eq2), sum_eq.animate.move_to(eq_group.get_center()))
         self.wait(1)
 
+        self.play(FadeOut(eq1), FadeOut(eq2), sum_eq.animate.move_to(eq_group.get_center()))
+
         # =========================================================
-        # 7. RECOGNIZE THE WHOLE: R1 + R2 = R, T1 + T2 = T
-        #    Physically JOIN the two rectangle pieces back together
-        #    (staying at the same lifted height — no dropping back down)
-        #    while the equation collapses to T = 1/2 R. The two split
-        #    triangle halves are retired and replaced by one fresh,
-        #    single triangle inside the reunited rectangle.
+        # RECOMBINATION
         # =========================================================
+
         note_text = Text(
-            "R\u2081 + R\u2082 is just the original rectangle, R.\nT\u2081 + T\u2082 is just the original triangle, T.",
+            """
+            R₁ + R₂ is the original rectangle.
+            T₁ + T₂ is the original triangle.
+            """,
             font_size=26,
-            line_spacing=1.2,
         ).next_to(sum_eq, DOWN, buff=0.6)
 
-        self.play(Write(note_text))
-        self.wait(2.5)
+        with self.voiceover(
+            text="""
+            We can now put the pieces back together.
+            
+            The smaller rectangles become one large rectangle again.
+            And the two triangles become our original triangle.
+            """
+        ) as tracker:
+            self.play(Write(note_text), run_time=tracker.duration)
 
-        # Strip the color from the bare rectangle pieces, leaving plain frames.
+        self.wait(1)
+
         self.play(
             FadeOut(r1_label),
             FadeOut(t1_label),
@@ -1035,49 +1186,21 @@ class AreaArbitraryTriangle(MovingCameraScene):
             FadeOut(note_text),
             rect_1.animate.set_fill(opacity=0).set_stroke(color=GREY_D, width=3),
             rect_2.animate.set_fill(opacity=0).set_stroke(color=GREY_D, width=3),
-            run_time=1,
         )
-        self.wait(0.3)
 
-        # Slide the two rectangle+triangle pieces back together — horizontally
-        # only, so the whole figure stays up at the lifted height.
+        self.play(r1_shapes.animate.shift(RIGHT * 0.8), r2_shapes.animate.shift(LEFT * 0.8), run_time=1.8)
 
-        # Label the reunited rectangle's base and height.
-        merged_shift = UP * split_lift
+        # =========================================================
+        # FINAL FORMULA
+        # =========================================================
+
+        merged_shift = UP * 0.5
+
         m_bl = r_bl + merged_shift
         m_br = r_br + merged_shift
         m_tr = r_tr + merged_shift
         m_apex = apex + merged_shift
 
-        merged_base_brace = Brace(Line(m_bl, m_br), direction=DOWN, color=GREY_D, buff=0.15)
-        merged_base_label = merged_base_brace.get_text("b").set_color(GREY_D)
-
-        merged_height_brace = Brace(Line(m_br, m_tr), direction=RIGHT, color=GREY_D, buff=0.15)
-        merged_height_label = merged_height_brace.get_text("h").set_color(GREY_D)
-
-        VGroup(
-            rect_1,
-            rect_2,
-            tri_1,
-            tri_2,
-            merged_base_brace,
-            merged_base_label,
-            merged_height_brace,
-            merged_height_label,
-        )
-
-        self.play(
-            r1_shapes.animate.shift(RIGHT * split_shift),
-            r2_shapes.animate.shift(LEFT * split_shift),
-            run_time=1.8,
-        )
-        self.wait(0.5)
-
-        # =========================================================
-        # 8. FINAL REVEAL: SUBSTITUTE R = b x h
-        #    Swap the two triangle halves for one single, seamless
-        #    triangle right as the final formula appears.
-        # =========================================================
         merged_tri = Polygon(
             m_bl,
             m_br,
@@ -1088,57 +1211,80 @@ class AreaArbitraryTriangle(MovingCameraScene):
             stroke_width=4,
         )
 
-        self.play(
-            FadeOut(tri_1),
-            FadeOut(tri_2),
-            FadeIn(merged_tri),
-        )
+        self.play(FadeOut(tri_1), FadeOut(tri_2), FadeIn(merged_tri))
 
-        self.play(FadeIn(merged_base_brace), Write(merged_base_label), run_time=1)
-        self.play(FadeIn(merged_height_brace), Write(merged_height_label), run_time=1)
-        self.wait(1.5)
+        merged_base_brace = Brace(Line(m_bl, m_br), direction=DOWN, color=GREY_D, buff=0.15)
+        merged_base_label = merged_base_brace.get_text("b").set_color(GREY_D)
 
-        final_eq = MathTex(r"T", r"=", r"\frac{1}{2}", r"R").set_color_by_tex_to_color_map({"T": BLUE})
-        final_eq.move_to(sum_eq.get_center())
+        merged_height_brace = Brace(Line(m_br, m_tr), direction=RIGHT, color=GREY_D, buff=0.15)
+        merged_height_label = merged_height_brace.get_text("h").set_color(GREY_D)
 
-        self.play(ReplacementTransform(sum_eq, final_eq))
+        self.play(FadeIn(merged_base_brace), Write(merged_base_label))
+        self.play(FadeIn(merged_height_brace), Write(merged_height_label))
 
-        # conclusion
-        rectangle_formula = (
-            MathTex(
-                r"\text{We know, Area of R} = b \times h",
-            )
-            .scale(0.9)
-            .next_to(final_eq, DOWN, buff=0.5)
-        )
-        self.play(Write(rectangle_formula))
-        self.wait(3)
+        # ---------------------------------------------------------
+        # Triangle is half rectangle
+        # ---------------------------------------------------------
+
+        half_rectangle_eq = MathTex(r"T", r"=", r"\frac{1}{2}", r"R")
+
+        half_rectangle_eq.move_to(sum_eq.get_center())
+
+        with self.voiceover(
+            text="""
+            The triangle is exactly half of the rectangle.
+            
+            So the area of the triangle is one half
+            times the area of the rectangle.
+            """
+        ) as tracker:
+            self.play(FadeOut(sum_eq), run_time=0.3)
+            self.play(Write(half_rectangle_eq), run_time=tracker.duration - 0.3)
+
+        self.wait(1)
+
+        # ---------------------------------------------------------
+        # Rectangle area formula
+        # ---------------------------------------------------------
+
+        rectangle_formula = MathTex(r"R", r"=", r"b", r"\times", r"h").scale(0.9).next_to(half_rectangle_eq, DOWN, buff=0.5)
+
+        with self.voiceover(
+            text="""
+            A rectangle's area is simply its base times its height.
+            """
+        ) as tracker:
+            self.play(Write(rectangle_formula), run_time=tracker.duration)
+
+        self.wait(1)
+
+        # ---------------------------------------------------------
+        # Substitute rectangle into triangle formula
+        # ---------------------------------------------------------
 
         final_formula = (
-            MathTex(
-                r"\text{Area of Triangle} = \frac{1}{2} \times b \times h",
-            )
+            MathTex(r"\text{Area of Triangle}", r"=", r"\frac{1}{2}", r"\times", r"b", r"\times", r"h")
             .scale(0.9)
             .next_to(merged_base_brace, DOWN, buff=1.5)
         )
 
-        box = SurroundingRectangle(
-            final_formula,
-            color=BLUE,
-            buff=0.2,
-            corner_radius=0.1,
-        )
+        box = SurroundingRectangle(final_formula, color=BLUE, buff=0.2, corner_radius=0.1)
 
-        self.play(
-            FadeOut(final_eq),
-            FadeOut(rectangle_formula),
-        )
+        with self.voiceover(
+            text="""
+            and, Since the triangle is half of the rectangle,            
+            it's area is  half of  base times height.
+            """
+        ) as tracker:
+            self.play(
+                FadeOut(half_rectangle_eq),
+                FadeOut(rectangle_formula),
+                FadeIn(final_formula),
+                Create(box),
+                run_time=tracker.duration,
+            )
 
-        self.play(
-            FadeIn(final_formula),
-            Create(box),
-        )
-        self.wait(6)
+        self.wait(5)
 
 
 class AreaEquilateralTriangle(MovingCameraScene):
